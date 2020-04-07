@@ -16,6 +16,9 @@ logs/**
 !data/**/
 !logs/**/
 
+# except scraped dataset
+!data/03_primary/**
+
 # also keep all .gitkeep files
 !.gitkeep
 

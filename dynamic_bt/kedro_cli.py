@@ -139,8 +139,7 @@ def _split_params(ctx, param, value):
         if len(item) != 2:
             ctx.fail(
                 "Invalid format of `{}` option: Item `{}` must contain a key and "
-                "a value separated by `:`.".format(param.name, item[0])
-            )
+                "a value separated by `:`.".format(param.name, item[0]))
         key = item[0].strip()
         if not key:
             ctx.fail(
@@ -197,19 +196,21 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--from-inputs", type=str, default="", help=FROM_INPUTS_HELP, callback=_split_string
-)
+    "--from-inputs", type=str, default="", help=FROM_INPUTS_HELP,
+    callback=_split_string)
 @click.option(
-    "--from-nodes", type=str, default="", help=FROM_NODES_HELP, callback=_split_string
-)
+    "--from-nodes", type=str, default="", help=FROM_NODES_HELP,
+    callback=_split_string)
 @click.option(
-    "--to-nodes", type=str, default="", help=TO_NODES_HELP, callback=_split_string
-)
-@click.option("--node", "-n", "node_names", type=str, multiple=True, help=NODE_ARG_HELP)
+    "--to-nodes", type=str, default="", help=TO_NODES_HELP,
+    callback=_split_string)
 @click.option(
-    "--runner", "-r", type=str, default=None, multiple=False, help=RUNNER_ARG_HELP
-)
-@click.option("--parallel", "-p", is_flag=True, multiple=False, help=PARALLEL_ARG_HELP)
+    "--node", "-n", "node_names", type=str, multiple=True, help=NODE_ARG_HELP)
+@click.option(
+    "--runner", "-r", type=str, default=None, multiple=False,
+    help=RUNNER_ARG_HELP)
+@click.option("--parallel", "-p", is_flag=True, multiple=False,
+              help=PARALLEL_ARG_HELP)
 @click.option(
     "--env",
     "-e",
@@ -237,8 +238,8 @@ def cli():
     callback=_config_file_callback,
 )
 @click.option(
-    "--params", type=str, default="", help=PARAMS_ARG_HELP, callback=_split_params
-)
+    "--params", type=str, default="", help=PARAMS_ARG_HELP,
+    callback=_split_params)
 def run(
     tag,
     env,
@@ -261,7 +262,8 @@ def run(
         )
     if parallel:
         runner = "ParallelRunner"
-    runner_class = load_obj(runner, "kedro.runner") if runner else SequentialRunner
+    runner_class = load_obj(
+        runner, "kedro.runner") if runner else SequentialRunner
 
     tag = _get_values_as_tuple(tag) if tag else tag
     node_names = _get_values_as_tuple(node_names) if node_names else node_names
@@ -305,7 +307,8 @@ def lint(files):
         raise KedroCliError(NO_DEPENDENCY_MESSAGE.format(exc.name))
 
     python_call("flake8", ("--max-line-length=88",) + files)
-    python_call("isort", ("-rc", "-tc", "-up", "-fgw=0", "-m=3", "-w=88") + files)
+    python_call("isort", ("-rc", "-tc", "-up",
+                          "-fgw=0", "-m=3", "-w=88") + files)
 
     if sys.version_info[:2] >= (3, 6):
         try:
@@ -376,7 +379,8 @@ def build_docs(open_docs):
     )
     call(["sphinx-build", "-M", "html", "docs/source", "docs/build", "-a"])
     if open_docs:
-        docs_page = (Path.cwd() / "docs" / "build" / "html" / "index.html").as_uri()
+        docs_page = (
+            Path.cwd() / "docs" / "build" / "html" / "index.html").as_uri()
         secho("Opening {}".format(docs_page))
         webbrowser.open(docs_page)
 
@@ -402,13 +406,10 @@ def build_reqs():
 @cli.command("activate-nbstripout")
 def activate_nbstripout():
     """Install the nbstripout git hook to automatically clean notebooks."""
-    secho(
-        (
-            "Notebook output cells will be automatically cleared before committing"
-            " to git."
-        ),
-        fg="yellow",
-    )
+    secho((
+        "Notebook output cells will be automatically cleared before committing"
+        " to git."),
+        fg="yellow",)
 
     try:
         import nbstripout  # pylint: disable=unused-import
@@ -430,8 +431,8 @@ def activate_nbstripout():
 
 
 def _build_jupyter_command(
-    base: str, ip: str, all_kernels: bool, args: Iterable[str], idle_timeout: int
-) -> List[str]:
+        base: str, ip: str, all_kernels: bool, args: Iterable[str],
+        idle_timeout: int) -> List[str]:
     cmd = [
         base,
         "--ip",
@@ -477,7 +478,8 @@ def jupyter():
 @click.option(
     "--all-kernels", is_flag=True, default=False, help=JUPYTER_ALL_KERNELS_HELP
 )
-@click.option("--idle-timeout", type=int, default=30, help=JUPYTER_IDLE_TIMEOUT_HELP)
+@click.option("--idle-timeout", type=int, default=30,
+              help=JUPYTER_IDLE_TIMEOUT_HELP)
 @click.option(
     "--env",
     "-e",
@@ -493,8 +495,8 @@ def jupyter_notebook(ip, all_kernels, env, idle_timeout, args):
         ipython_message(all_kernels)
 
     arguments = _build_jupyter_command(
-        "notebook", ip=ip, all_kernels=all_kernels, args=args, idle_timeout=idle_timeout
-    )
+        "notebook", ip=ip, all_kernels=all_kernels, args=args,
+        idle_timeout=idle_timeout)
 
     python_call_kwargs = _build_jupyter_env(env)
     python_call("jupyter", arguments, **python_call_kwargs)
@@ -505,7 +507,8 @@ def jupyter_notebook(ip, all_kernels, env, idle_timeout, args):
 @click.option(
     "--all-kernels", is_flag=True, default=False, help=JUPYTER_ALL_KERNELS_HELP
 )
-@click.option("--idle-timeout", type=int, default=30, help=JUPYTER_IDLE_TIMEOUT_HELP)
+@click.option("--idle-timeout", type=int, default=30,
+              help=JUPYTER_IDLE_TIMEOUT_HELP)
 @click.option(
     "--env",
     "-e",
@@ -521,8 +524,8 @@ def jupyter_lab(ip, all_kernels, env, idle_timeout, args):
         ipython_message(all_kernels)
 
     arguments = _build_jupyter_command(
-        "lab", ip=ip, all_kernels=all_kernels, args=args, idle_timeout=idle_timeout
-    )
+        "lab", ip=ip, all_kernels=all_kernels, args=args,
+        idle_timeout=idle_timeout)
 
     python_call_kwargs = _build_jupyter_env(env)
     python_call("jupyter", arguments, **python_call_kwargs)
@@ -564,7 +567,8 @@ def convert_notebook(all_flag, overwrite_flag, filepath):
         # whereas Python glob does, which is more useful in
         # ensuring checkpoints will not be included
         pattern = kedro_project_path / "**" / "*.ipynb"
-        notebooks = sorted(Path(p) for p in iglob(str(pattern), recursive=True))
+        notebooks = sorted(Path(p)
+                           for p in iglob(str(pattern), recursive=True))
     else:
         notebooks = [Path(f) for f in filepath]
 
@@ -573,8 +577,8 @@ def convert_notebook(all_flag, overwrite_flag, filepath):
     if non_unique_names:
         raise KedroCliError(
             "Found non-unique notebook names! "
-            "Please rename the following: {}".format(", ".join(non_unique_names))
-        )
+            "Please rename the following: {}".format(
+                ", ".join(non_unique_names)))
 
     for notebook in notebooks:
         secho("Converting notebook '{}'...".format(str(notebook)))
@@ -588,9 +592,9 @@ def convert_notebook(all_flag, overwrite_flag, filepath):
 
         if output_path.is_file():
             overwrite = overwrite_flag or click.confirm(
-                "Output file {} already exists. Overwrite?".format(str(output_path)),
-                default=False,
-            )
+                "Output file {} already exists. Overwrite?".format(
+                    str(output_path)),
+                default=False,)
             if overwrite:
                 export_nodes(notebook, output_path)
         else:
