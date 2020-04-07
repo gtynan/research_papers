@@ -1,4 +1,8 @@
-# Dynamic BT dataframe element params
+#
+# Static parameters for pipeline
+#
+
+# Dataframe elements
 nba_season_df:
   year_of_interest: 2010
   n_matches: 1230
@@ -8,3 +12,10 @@ nba_season_df:
   away_ability: 'Aability'
   home_win: 'HomeWin'
   away_win: 'AwayWin'
+
+# Bradley Terry params stated in paper
+nba_dynamic_bt:
+  home_smoother: 0.043
+  starting_home_ability: 0.608
+  away_smoother: 0.025
+  starting_away_ability: 0.392
