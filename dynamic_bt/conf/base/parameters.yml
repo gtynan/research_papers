@@ -1,1 +1,10 @@
-
+# Dynamic BT dataframe element params
+nba_season_df:
+  year_of_interest: 2010
+  n_matches: 1230
+  nba_home_col: 'Home/Neutral'
+  nba_away_col: 'Visitor/Neutral'
+  home_ability: 'Hability'
+  away_ability: 'Aability'
+  home_win: 'HomeWin'
+  away_win: 'AwayWin'
