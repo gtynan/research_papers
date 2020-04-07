@@ -50,3 +50,12 @@ kedro run
 1. Dynamic Bradley–Terry modelling of sports tournaments.
     - **Paper link**: https://rss.onlinelibrary.wiley.com/doi/full/10.1111/j.1467-9876.2012.01046.x 
     - **Folder**: `dynamic_bt/`
+
+
+## Pipeline structure
+
+### conf
+
+### data
+
+### src

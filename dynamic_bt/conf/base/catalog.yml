@@ -1,0 +1,33 @@
+#
+# Relates to the Dynamic Bradley terry paper
+# Storing pipeline output
+#
+
+# starting dataset
+nba_season_data:
+  type: pandas.CSVDataSet
+  filepath: data/03_primary/nba_season.csv
+
+# features added
+nba_season_with_ma:
+  type: pandas.CSVDataSet
+  filepath: data/04_features/nba_season.csv
+
+# training data
+nba_season_X:
+  type: pandas.CSVDataSet
+  filepath: data/05_model_input/nba_season/X.csv
+
+# training data
+nba_season_y:
+  type: pandas.CSVDataSet
+  filepath: data/05_model_input/nba_season/y.csv
+  save_args:
+    header: True
+
+# output fitted params
+nba_season_results:
+  type: pandas.CSVDataSet
+  filepath: data/07_model_output/nba_results.csv
+  save_args:
+    index: True
