@@ -39,10 +39,10 @@ class TestBasicDynamicModel:
     def test_log_prediction_error(self, data):
         abilities, X, y = data
 
-        # ln(1 - prob) when win else ln(probs)
+        # ln(probs) when win else ln(1 - probs)
         expected_log_errors = np.array([
-            [np.log(1 - 0.5), np.log(1 - 0.73105857863)],
-            [np.log(0.37754066879), np.log(1 - 0.37754066879)]
+            [np.log(0.5), np.log(0.73105857863)],
+            [np.log(1 - 0.37754066879), np.log(0.37754066879)]
         ])
 
         for t in range(len(X)):
