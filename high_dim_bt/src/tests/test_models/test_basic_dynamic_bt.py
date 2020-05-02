@@ -56,7 +56,7 @@ class TestBasicDynamicModel:
     def test_calculate_score(self, data):
         abilities, X, y = data
 
-        expected_p1_scores = np.array(
+        expected_p1_scores = np.array([
             [1 * (1 - .5), 1 * (1 - 0.73105857863)],
             [-1 * 0.37754066879, 1 * (1 - 0.37754066879)]
         ])
@@ -67,7 +67,7 @@ class TestBasicDynamicModel:
                 y[t], probs)
 
             np.testing.assert_array_almost_equal(
-                p1_scores, expected_p1_scores[t], decimal = 5)
+                p1_scores, expected_p1_scores[t], decimal=5)
 
             np.testing.assert_array_almost_equal(
-                p2_scores, -expected_p1_scores[t], decimal = 5)
+                p2_scores, -expected_p1_scores[t], decimal=5)
