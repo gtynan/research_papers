@@ -71,3 +71,33 @@ class TestBasicDynamicModel:
 
             np.testing.assert_array_almost_equal(
                 p2_scores, -expected_p1_scores[t], decimal=5)
+
+    def test_update_abilities(self, data):
+        abilities, X, y = data
+        tau = 0.5
+
+        expected_abilities = np.array([
+            [0.5 + .5*tau,
+             0.5 - .5*tau,
+             1 + (1 - 0.73105857863)*tau,
+             0 - (1 - 0.73105857863)*tau],
+            [0.5 - (1 - 0.37754066879)*tau,
+             0.5 - 0.37754066879*tau,
+             1+0.37754066879*tau,
+             0 + (1 - 0.37754066879)*tau]
+        ])
+
+        for t in range(len(X)):
+            probs = BasicDynamicModel._calculate_probs(X[t], abilities)
+            p1_scores, p2_scores = BasicDynamicModel._calculate_score(
+                y[t], probs)
+
+            new_abilities = BasicDynamicModel._update_abilities(
+                X[t], abilities, p1_scores, p2_scores, tau)
+
+            # ensure function does not overwrite passed array
+            np.assert_raises(
+                AssertionError, np.assert_array_equal, new_abilities, abilities)
+
+            np.testing.assert_array_almost_equal(
+                new_abilities, expected_abilities[t], decimal=5)
