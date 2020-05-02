@@ -1,5 +1,6 @@
 from typing import Tuple
 import numpy as np
+import copy
 
 
 class BasicDynamicModel:
@@ -93,3 +94,15 @@ class BasicDynamicModel:
         assert X.shape[0] == p1_score.shape[0] == p2_score.shape[0]
         # flat arrays
         assert abilities.ndim == p1_score.ndim == p2_score.ndim == 1
+
+        new_abilites = copy.deepcopy(abilities)
+
+        # only 1 entry > 0 for each matchup (row) thus max returns positon
+        p1_index = np.argmax(X > 0, axis=1)
+        new_abilites[p1_index] += p1_score * tau
+
+        # only 1 entry < 0 for each matchup (row) thus max returns positon
+        p2_index = np.argmax(X < 0, axis=1)
+        new_abilites[p2_index] += p2_score * tau
+
+        return new_abilites
