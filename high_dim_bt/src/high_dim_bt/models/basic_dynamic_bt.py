@@ -49,6 +49,8 @@ class BasicDynamicModel:
         assert y.shape == probs.shape
         assert y.ndim == 1
 
+        return np.log(y * probs + (1-y) * (1 - probs))
+
     @staticmethod
     def _calculate_score(y: np.array, probs: np.array) -> Tuple[np.array, np.array]:
         '''
