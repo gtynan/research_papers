@@ -67,6 +67,9 @@ class BasicDynamicModel:
         assert y.shape == probs.shape
         assert y.ndim == 1
 
+        s1 = y * (1 - probs) - (1 - y) * probs
+        return s1, -s1
+
     @staticmethod
     def _update_abilities(
             X: np.array, abilities: np.array, p1_score: np.array,
