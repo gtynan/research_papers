@@ -76,6 +76,7 @@ class TestBasicDynamicModel:
         abilities, X, y = data
         tau = 0.5
 
+        # current ability + score*tau
         expected_abilities = np.array([
             [0.5 + .5*tau,
              0.5 - .5*tau,
@@ -96,8 +97,8 @@ class TestBasicDynamicModel:
                 X[t], abilities, p1_scores, p2_scores, tau)
 
             # ensure function does not overwrite passed array
-            np.assert_raises(
-                AssertionError, np.assert_array_equal, new_abilities, abilities)
+            np.testing.assert_raises(
+                AssertionError, np.testing.assert_array_almost_equal, new_abilities, abilities)
 
             np.testing.assert_array_almost_equal(
                 new_abilities, expected_abilities[t], decimal=5)
