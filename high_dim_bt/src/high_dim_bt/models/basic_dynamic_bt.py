@@ -20,12 +20,18 @@ class BasicDynamicModel:
             abilites: array (p, ) of player abilites
 
         Returns:
-            array (n, ) of probability of p1 beating p2 in a given matchup  
+            array (n, ) of probability of p1 beating p2 in a given matchup
         '''
         # abilities to be flat array
         assert abilities.ndim == 1
         # X columns = abilites length,
         assert X.shape[1] == abilities.shape[0]
+
+        # elementwise multiplication gives p1 and -p2 values
+        # sum calculates the difference
+        ability_diff = np.sum(X * abilities, axis=1)
+
+        return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
     @staticmethod
     def _log_prediction_error(y: np.array, probs: np.array) -> np.array:
@@ -69,8 +75,8 @@ class BasicDynamicModel:
         Args:
             X: array (n x p) of matchups where each row corresponds to a match.
             abilites: array (p, ) of player abilites
-            p1_score: array (n, ) to be weighted by tau and added to abilites 
-            p2_score: array (n, ) to be weighted by tau and added to abilites 
+            p1_score: array (n, ) to be weighted by tau and added to abilites
+            p2_score: array (n, ) to be weighted by tau and added to abilites
             tau: weight of new scores
 
         Returns:
