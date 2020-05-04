@@ -1,10 +1,11 @@
 import pytest
 import numpy as np
+import pandas as pd
 
-from high_dim_bt.models.basic_dynamic_bt import BasicDynamicModel
+from high_dim_bt.models.model_1 import Model1
 
 
-class TestBasicDynamicModel:
+class TestModel1:
 
     @pytest.fixture(scope='class')
     def data(self):
@@ -23,6 +24,66 @@ class TestBasicDynamicModel:
         ])
         return abilities, X, y
 
+    @pytest.fixture(scope='class')
+    def pandas_data(self, data):
+        abilities, X, y = data
+
+        # reformatting data to pandas objects
+        date_col = 'Date'
+
+        X = pd.DataFrame(X.reshape(-1, 4))
+        # creating two different dates
+        X.loc[:2, date_col] = '1'
+        X.loc[2:, date_col] = '2'
+
+        y = pd.Series(y.flatten())
+        return abilities, X, y
+
+    def test_alpha(self, pandas_data):
+        abilities, X, y = pandas_data
+
+        mod = Model1()
+
+        with pytest.raises(Exception):
+            mod.alpha
+
+        mod.fit(X, y, 'Date', abilities)
+
+        assert isinstance(mod.alpha, float)
+
+    def test_tau(self, pandas_data):
+        abilities, X, y = pandas_data
+
+        mod = Model1()
+
+        with pytest.raises(Exception):
+            mod.tau
+
+        mod.fit(X, y, 'Date', abilities)
+
+        assert isinstance(mod.tau, float)
+
+    def test_ln_likelihood(self, pandas_data):
+        abilities, X, y = pandas_data
+
+        mod = Model1()
+
+        with pytest.raises(Exception):
+            mod.ln_likelihood
+
+        mod.fit(X, y, 'Date', abilities)
+
+        assert isinstance(mod.ln_likelihood, float)
+
+    def test_neg_log_likelihood(self, pandas_data):
+        abilities, X, y = pandas_data
+
+        negative_likelihood = Model1._neg_log_likelihood(
+            [1, 0.5], X, y, 'Date', abilities)
+
+        # TODO double check
+        assert negative_likelihood == pytest.approx(2.68678)
+
     def test_calculate_probs(self, data):
         abilities, X, y = data
 
@@ -32,7 +93,7 @@ class TestBasicDynamicModel:
         ])
 
         for t in range(len(X)):
-            probs = BasicDynamicModel._calculate_probs(X[t], abilities)
+            probs = Model1._calculate_probs(X[t], abilities)
 
             np.testing.assert_array_almost_equal(
                 probs, expected_probs[t], decimal=5)
@@ -47,8 +108,8 @@ class TestBasicDynamicModel:
         ])
 
         for t in range(len(X)):
-            probs = BasicDynamicModel._calculate_probs(X[t], abilities)
-            log_errors = BasicDynamicModel._log_prediction_error(y[t], probs)
+            probs = Model1._calculate_probs(X[t], abilities)
+            log_errors = Model1._log_prediction_error(y[t], probs)
 
             np.testing.assert_array_almost_equal(
                 log_errors, expected_log_errors[t], decimal=5)
@@ -62,8 +123,8 @@ class TestBasicDynamicModel:
         ])
 
         for t in range(len(X)):
-            probs = BasicDynamicModel._calculate_probs(X[t], abilities)
-            p1_scores, p2_scores = BasicDynamicModel._calculate_score(
+            probs = Model1._calculate_probs(X[t], abilities)
+            p1_scores, p2_scores = Model1._calculate_score(
                 y[t], probs)
 
             np.testing.assert_array_almost_equal(
@@ -89,11 +150,11 @@ class TestBasicDynamicModel:
         ])
 
         for t in range(len(X)):
-            probs = BasicDynamicModel._calculate_probs(X[t], abilities)
-            p1_scores, p2_scores = BasicDynamicModel._calculate_score(
+            probs = Model1._calculate_probs(X[t], abilities)
+            p1_scores, p2_scores = Model1._calculate_score(
                 y[t], probs)
 
-            new_abilities = BasicDynamicModel._update_abilities(
+            new_abilities = Model1._update_abilities(
                 X[t], abilities, p1_scores, p2_scores, tau)
 
             # ensure function does not overwrite passed array
