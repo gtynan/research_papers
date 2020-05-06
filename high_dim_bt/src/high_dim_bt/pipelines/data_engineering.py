@@ -12,7 +12,6 @@ def create_pipeline(**kwargs):
             url='params:tennis_data_url',
             start_year='params:tennis_data_start_year',
             end_year='params:tennis_data_end_year',
-            date_col='params:tennis_data_date_col',
             year_const='params:tennis_data_year_const'),
         outputs='master_data')
     return Pipeline(
