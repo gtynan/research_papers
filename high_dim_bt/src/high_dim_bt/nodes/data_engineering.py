@@ -21,7 +21,6 @@ def get_tennis_data(url: str, start_year: float, end_year: float,
     for i, year in enumerate(range(start_year, end_year + 1)):
 
         data_url = url.replace(year_const, str(year))
-
         data = pd.read_excel(data_url)
 
         if i == 0:
@@ -30,3 +29,7 @@ def get_tennis_data(url: str, start_year: float, end_year: float,
             df = pd.concat([df, data], sort=False, ignore_index=True)
 
     return df
+
+
+def clean_data(data: pd.DataFrame, min_matches: int):
+    pass

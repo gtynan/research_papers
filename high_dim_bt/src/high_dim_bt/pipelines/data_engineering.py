@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node
 
-from ..data_engineering.data_ingestion import get_tennis_data
+from ..nodes.data_engineering import get_tennis_data
 
 from pathlib import Path
 
