@@ -32,6 +32,7 @@
 from typing import Dict
 from kedro.pipeline import Pipeline
 
+from high_dim_bt.pipelines import data_engineering
 
 
 def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
@@ -46,6 +47,6 @@ def create_pipelines(**kwargs) -> Dict[str, Pipeline]:
     """
 
     return {
-        "__default__": Pipeline([])
+        "de": Pipeline([data_engineering.create_pipeline()]),
+        "__default__": Pipeline([data_engineering.create_pipeline()])
     }
-

@@ -1,0 +1,22 @@
+from kedro.pipeline import Pipeline, node
+
+from ..data_engineering.data_ingestion import get_tennis_data
+
+from pathlib import Path
+
+
+def create_pipeline(**kwargs):
+    data_ingestion = node(
+        func=get_tennis_data,
+        inputs=dict(
+            url='params:tennis_data_url',
+            start_year='params:tennis_data_start_year',
+            end_year='params:tennis_data_end_year',
+            date_col='params:tennis_data_date_col',
+            year_const='params:tennis_data_year_const'),
+        outputs='master_data')
+    return Pipeline(
+        [
+            data_ingestion
+        ]
+    )
