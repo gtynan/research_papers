@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def get_tennis_data(url: str, start_year: float, end_year: float,
+def get_tennis_data(url: str, start_year: int, end_year: int,
                     year_const: str) -> pd.DataFrame:
     '''
     Creates master dataframe of all games within years specified
@@ -15,7 +15,6 @@ def get_tennis_data(url: str, start_year: float, end_year: float,
     Returns:
         Dataframe of all matches played between date range
     '''
-
     df: pd.DataFrame = None
 
     for i, year in enumerate(range(start_year, end_year + 1)):
