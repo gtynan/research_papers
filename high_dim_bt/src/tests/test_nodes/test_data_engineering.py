@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 
-from high_dim_bt.nodes.data_engineering import get_tennis_data, clean_data
+from high_dim_bt.nodes.data_engineering import get_tennis_data, clean_data, get_model_input
 
 
 @pytest.fixture(scope='module')
@@ -47,3 +47,43 @@ def test_clean_data(context, dummy_data):
     assert all(np.isin(players, ["Tom", "Harry"])) == True
     # row 5 has nan in loser points shoul be removed
     assert cleaned_data[nan_cols].isnull().values.any() == False
+
+
+def test_get_model_input(context, dummy_data):
+
+    # messy index to ensure able to handle
+    df = dummy_data
+    df.index = [2, 6, 10, 11, 12]
+
+    # no base case
+    X, y = get_model_input(
+        df, context.params['winner_col'],
+        context.params['loser_col'],
+        keep_cols=[context.params['date_col']])
+
+    # output index should be same as input index
+    assert list(X.index) == list(y.index) == list(df.index)
+
+    # X and y same length
+    assert len(X) == len(y) == 5
+
+    # 1 for player_1 should be offset by -1 for player_2
+    assert all(X.sum(axis=1)) == 0
+
+    # player names should be column names
+    assert all(df[context.params['winner_col']].isin(X.columns))
+
+    # y should not be all 1's
+    assert y.sum() == len(y) - len(y)//2
+
+    # checking X and y correctly correspond to original data
+    for i, winner in df[context.params['winner_col']].items():
+        # either 1 or -1
+        winner_value = X.loc[i, winner]
+        # either 0 or 1
+        outcome_value = y[i]
+
+        if winner_value < 0:
+            assert outcome_value == 0
+        else:
+            assert outcome_value == 1
