@@ -1,4 +1,6 @@
+from typing import List
 import pandas as pd
+import numpy as np
 
 
 def get_tennis_data(url: str, start_year: int, end_year: int,
@@ -30,5 +32,30 @@ def get_tennis_data(url: str, start_year: int, end_year: int,
     return df
 
 
-def clean_data(data: pd.DataFrame, min_matches: int):
-    pass
+def clean_data(
+        data: pd.DataFrame, winner_col: str, loser_col: str, min_matches: int,
+        drop_nan_cols: List[str]) -> pd.DataFrame:
+    '''
+    Args:
+        data: unclean dataframe downloaded from tennis data
+        winner_col: column containing winner 
+        loser_col: column containing loser
+        min_matches: min matches competed in otherwise dropped
+        drop_nan_cols: all rows with nans in these columns will be dropped
+
+    Returns:
+        Cleaned data
+    '''
+
+    players, counts = np.unique(
+        data[[winner_col, loser_col]].values.ravel(),
+        return_counts=True)
+
+    # only those above min matches
+    keep_players = players[counts >= min_matches]
+
+    data = data[(data[winner_col].isin(keep_players)) &
+                (data[loser_col].isin(keep_players))]
+
+    data = data.dropna(subset=drop_nan_cols)
+    return data
