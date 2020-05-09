@@ -54,12 +54,3 @@ kedro run
 2. The analysis and forecasting of tennis matches by using a high dimensional dynamic model
     - **Paper link**: https://www.researchgate.net/publication/332734788_The_analysis_and_forecasting_of_tennis_matches_by_using_a_high_dimensional_dynamic_model 
     - **Folder**: `high_dim_bt/`
-
-
-## Pipeline structure
-
-### conf
-
-### data
-
-### src

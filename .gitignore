@@ -2,29 +2,24 @@
 # KEDRO PROJECT
 
 # ignore all local configuration
-conf/local/**
+**/conf/local/**
 !conf/local/.gitkeep
 
 # ignore potentially sensitive credentials files
-conf/**/*credentials*
+**/conf/**/*credentials*
 
 # ignore everything in the following folders
-data/**
-logs/**
+**/data/**
+**/logs/**
+**/notebooks/**
+**/.ipython/**
 
 # except their sub-folders
-!data/**/
-!logs/**/
-
-# except scraped dataset
-!data/03_primary/**
+**/!data/**/
+**/!logs/**/
 
 # also keep all .gitkeep files
 !.gitkeep
-
-# keep also the example dataset
-!data/01_raw/iris.csv
-
 
 ##########################
 # Common files
