@@ -12,10 +12,11 @@
 **/data/**
 **/logs/**
 **/notebooks/**
+**/.ipython/**
 
 # except their sub-folders
-!data/**/
-!logs/**/
+**/!data/**/
+**/!logs/**/
 
 # also keep all .gitkeep files
 !.gitkeep
