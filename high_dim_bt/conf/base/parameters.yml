@@ -1,1 +1,12 @@
+tennis_data_url: 'http://www.tennis-data.co.uk/YEAR/YEAR.xls'
+tennis_data_start_year: 2017
+tennis_data_end_year: 2017
+tennis_data_year_const: 'YEAR'
 
+date_col: 'Date'
+winner_col: 'Winner'
+winner_pts: 'WPts'
+loser_col: 'Loser'
+loser_pts: 'LPts'
+drop_na_cols: ['WRank','LRank']
+min_matches: 9
