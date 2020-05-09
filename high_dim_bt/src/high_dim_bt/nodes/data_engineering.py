@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple, List
 import pandas as pd
 import numpy as np
 
@@ -38,7 +38,7 @@ def clean_data(
     '''
     Args:
         data: unclean dataframe downloaded from tennis data
-        winner_col: column containing winner 
+        winner_col: column containing winner
         loser_col: column containing loser
         min_matches: min matches competed in otherwise dropped
         drop_nan_cols: all rows with nans in these columns will be dropped
@@ -46,7 +46,6 @@ def clean_data(
     Returns:
         Cleaned data
     '''
-
     players, counts = np.unique(
         data[[winner_col, loser_col]].values.ravel(),
         return_counts=True)
@@ -63,19 +62,18 @@ def clean_data(
 
 def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
                     keep_cols: Optional[List[str]] = None) -> Tuple[pd.DataFrame,
-                                                                    pd.Series]:
+                                                                    pd.Series, np.array]:
     """
     Given row by row match data with winner and loser sepcified returns X and y data for Bardley Terry model
 
     Args:
+        data: dataframe of matches
         winner_col: column containing winner names
         loser_col: column containing lsoer names
-        data: dataframe of matches
-        base_case: player whos ability will be set to 0
         keep_cols: optional list of additional columns to keep in X data
 
     Reurns:
-        X and y data input for bardley terry model, y always relates to player_1
+        X, y and players data input for bardley terry model, y always relates to player_1
     """
     # dont want all 1's for y values so swapping some winners out of player_1 to player_2
     index = range(len(data))
@@ -104,6 +102,7 @@ def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
         )
     )}
 
+    # Matrix of data
     X = np.zeros((len(data), len(participants.keys())))
     X[index, player_1.map(participants)] = 1
     X[index, player_2.map(participants)] = -1
@@ -114,4 +113,42 @@ def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
     if keep_cols:
         X[keep_cols] = data[keep_cols]
 
-    return X, y
+    print(X.shape)
+    return X, y, np.array(list(participants.keys()))
+
+
+def get_starting_abilities(
+    players: np.array, data: pd.DataFrame, winner_col: str,
+        winner_pts: str, loser_col: str, loser_pts: str) -> np.array:
+    '''
+    Given list of players return their first occurance points in dataset (used as starting abilites)
+
+    Args:
+        players: list of players
+        data: dataset containing point information
+        winner_col: column containing winner
+        winner_pts: column containg winners points
+        loser_col: column containing loser
+        loser_pts: column conating loser points
+
+    Returns:
+        Array of points corresponding to list of players given
+    '''
+    # winners and losers flattened into long array
+    flatten_players = data[[winner_col, loser_col]].values.ravel()
+
+    # only unique players in dataset and their first occurance index
+    unique_players, unique_index = np.unique(
+        flatten_players, return_index=True)
+
+    # player: 1st index in flatten array
+    index_series = pd.Series(index=unique_players, data=unique_index)
+
+    # get 1st occurance for all players we are interested in
+    pos = index_series[players]
+
+    # get abilities using their 1st occurance index
+    abilities = data[[winner_pts, loser_pts]].values.ravel()[pos]
+
+    # any nan's relpaced with 0
+    return np.nan_to_num(abilities, nan=0)

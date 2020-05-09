@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 
-from high_dim_bt.nodes.data_engineering import get_tennis_data, clean_data, get_model_input
+from high_dim_bt.nodes.data_engineering import get_tennis_data, clean_data, get_model_input, get_starting_abilities
 
 
 @pytest.fixture(scope='module')
@@ -43,8 +43,8 @@ def test_clean_data(context, dummy_data):
         [[context.params['winner_col'],
           context.params['loser_col']]].values.ravel())
 
-    # Dick should be dropped as only played once
-    assert all(np.isin(players, ["Tom", "Harry"])) == True
+    # Dick should be dropped as only played once, unique automatically sorts players
+    np.testing.assert_array_equal(players, ["Harry", "Tom"])
     # row 5 has nan in loser points shoul be removed
     assert cleaned_data[nan_cols].isnull().values.any() == False
 
@@ -56,9 +56,10 @@ def test_get_model_input(context, dummy_data):
     df.index = [2, 6, 10, 11, 12]
 
     # no base case
-    X, y = get_model_input(
-        df, context.params['winner_col'],
-        context.params['loser_col'],
+    X, y, _ = get_model_input(
+        data=df,
+        winner_col=context.params['winner_col'],
+        loser_col=context.params['loser_col'],
         keep_cols=[context.params['date_col']])
 
     # output index should be same as input index
@@ -87,3 +88,15 @@ def test_get_model_input(context, dummy_data):
             assert outcome_value == 0
         else:
             assert outcome_value == 1
+
+
+def test_get_starting_abilities(context, dummy_data):
+    abilites = get_starting_abilities(
+        players=["Tom", "Harry"],
+        data=dummy_data,
+        winner_col=context.params['winner_col'],
+        winner_pts=context.params['winner_pts'],
+        loser_col=context.params['loser_col'],
+        loser_pts=context.params['loser_pts'])
+
+    np.testing.assert_array_equal(abilites, np.array([100, 10]))
