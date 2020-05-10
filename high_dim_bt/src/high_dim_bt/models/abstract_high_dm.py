@@ -3,6 +3,9 @@ from abc import ABC, abstractmethod
 import numpy as np
 import pandas as pd
 
+# Raised when certain properties or functions called prior to fit()
+fit_error: str = 'Cannot call prior to fit()'
+
 
 class AbstractHighDimensionalModel(ABC):
 
@@ -70,6 +73,25 @@ class AbstractHighDimensionalModel(ABC):
         return np.log(y * probs + (1 - y) * (1 - probs))
 
     @staticmethod
+    def _calculate_score(y: np.array, probs: np.array) -> Tuple[np.array, np.array]:
+        '''
+        Score function to add to abilites weighted by tau_b
+
+        Args:
+            y: array (n, ) of outcomes for each matchup
+            probs: array (n, ) of predicted probabilites for each matchup
+
+        Returns:
+            p1_score, p2_score both (n, )
+        '''
+        # both should be flat arrays
+        assert y.shape == probs.shape
+        assert y.ndim == 1
+
+        s1 = y * (1 - probs) - (1 - y) * probs
+        return s1, -s1
+
+    @staticmethod
     @abstractmethod
     def _neg_log_likelihood() -> float:
         '''
@@ -82,14 +104,6 @@ class AbstractHighDimensionalModel(ABC):
     def _calculate_probs() -> np.array:
         '''
         Probability of p1 beating p2
-        '''
-        pass
-
-    @staticmethod
-    @abstractmethod
-    def _calculate_score() -> Tuple[np.array, np.array]:
-        '''
-        Used to adjust level of strength between both players, hence returns scores of p1 and p2
         '''
         pass
 
