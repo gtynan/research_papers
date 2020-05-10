@@ -119,12 +119,22 @@ class Model1:
         '''
         # abilities to be flat array
         assert abilities.ndim == 1
+        # X can't be flat otherwise argwhere will fail
+        assert X.ndim > 1
         # X columns = abilites length,
         assert X.shape[1] == abilities.shape[0]
 
+        # removed to see if argwhere faster
+        '''
         # elementwise multiplication gives p1 and -p2 values
         # sum calculates the difference
-        ability_diff = np.sum(X * abilities, axis=1)
+        # ability_diff = np.sum(X * abilities, axis=1)
+        '''
+        # column position for each row
+        p1_index = np.argmax(X, axis=1)
+        p2_index = np.argmin(X, axis=1)
+
+        ability_diff = abilities[p1_index] - abilities[p2_index]
 
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
@@ -192,11 +202,11 @@ class Model1:
         new_abilites = copy.deepcopy(abilities)
 
         # only 1 entry > 0 for each matchup (row) thus max returns positon
-        p1_index = np.argmax(X > 0, axis=1)
+        p1_index = np.argmax(X, axis=1)
         new_abilites[p1_index] += (p1_score * tau)
 
         # only 1 entry < 0 for each matchup (row) thus max returns positon
-        p2_index = np.argmax(X < 0, axis=1)
+        p2_index = np.argmin(X, axis=1)
         new_abilites[p2_index] += (p2_score * tau)
 
         return new_abilites
