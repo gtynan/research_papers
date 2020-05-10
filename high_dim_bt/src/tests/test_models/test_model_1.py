@@ -49,19 +49,23 @@ class TestModel1:
 
         mod.fit(X, y, 'Date', abilities)
 
-        assert isinstance(mod.alpha, float)
+        assert isinstance(mod.alpha, tuple)
+        assert isinstance(mod.alpha[0], float)
+        assert isinstance(mod.alpha[1], float)
 
-    def test_tau(self, pandas_data):
+    def test_tau_b(self, pandas_data):
         abilities, X, y = pandas_data
 
         mod = Model1()
 
         with pytest.raises(Exception):
-            mod.tau
+            mod.tau_b
 
         mod.fit(X, y, 'Date', abilities)
 
-        assert isinstance(mod.tau, float)
+        assert isinstance(mod.tau_b, tuple)
+        assert isinstance(mod.tau_b[0], float)
+        assert isinstance(mod.tau_b[1], float)
 
     def test_ln_likelihood(self, pandas_data):
         abilities, X, y = pandas_data
@@ -159,7 +163,8 @@ class TestModel1:
 
             # ensure function does not overwrite passed array
             np.testing.assert_raises(
-                AssertionError, np.testing.assert_array_almost_equal, new_abilities, abilities)
+                AssertionError, np.testing.assert_array_almost_equal,
+                new_abilities, abilities)
 
             np.testing.assert_array_almost_equal(
                 new_abilities, expected_abilities[t], decimal=5)
