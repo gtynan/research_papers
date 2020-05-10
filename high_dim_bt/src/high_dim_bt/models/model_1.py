@@ -17,7 +17,7 @@ class Model1:
         '''
         try:
             return self._alpha
-        except:
+        except AttributeError:
             raise Exception(fit_error)
 
     @property
@@ -27,7 +27,7 @@ class Model1:
         '''
         try:
             return self._tau
-        except:
+        except AttributeError:
             raise Exception(fit_error)
 
     @property
@@ -37,23 +37,26 @@ class Model1:
         '''
         try:
             return self._ln_likelihood
-        except:
+        except AttributeError:
             raise Exception(fit_error)
 
     def get_fitted_abilities(self) -> pd.Series:
         '''
         Runs the fitting once more using the fitted alpha and tau to get end abilities
         '''
-        abilities = Model1._neg_log_likelihood(
-            params=[self.alpha, self.tau],
-            X=self.X, y=self.y, date_col=self.date_col,
-            abilities=self.starting_abilities, return_abilities=True)
+        try:
+            abilities = Model1._neg_log_likelihood(
+                params=[self.alpha, self.tau],
+                X=self.X, y=self.y, date_col=self.date_col,
+                abilities=self.starting_abilities, return_abilities=True)
 
-        players = self.X.drop(columns=self.date_col).columns
+            players = self.X.drop(columns=self.date_col).columns
 
-        return pd.Series(
-            data=abilities, index=players).sort_values(
-            ascending=False)
+            return pd.Series(
+                data=abilities, index=players).sort_values(
+                ascending=False)
+        except AttributeError:
+            raise Exception(fit_error)
 
     def fit(
             self, X: pd.DataFrame, y: pd.Series, date_col: str,
