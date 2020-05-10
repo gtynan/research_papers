@@ -40,6 +40,21 @@ class Model1:
         except:
             raise Exception(fit_error)
 
+    def get_fitted_abilities(self) -> pd.Series:
+        '''
+        Runs the fitting once more using the fitted alpha and tau to get end abilities
+        '''
+        abilities = Model1._neg_log_likelihood(
+            params=[self.alpha, self.tau],
+            X=self.X, y=self.y, date_col=self.date_col,
+            abilities=self.starting_abilities, return_abilities=True)
+
+        players = self.X.drop(columns=self.date_col).columns
+
+        return pd.Series(
+            data=abilities, index=players).sort_values(
+            ascending=False)
+
     def fit(
             self, X: pd.DataFrame, y: pd.Series, date_col: str,
             abilites: np.array) -> None:
@@ -54,6 +69,12 @@ class Model1:
         Returns:
             None
         '''
+        # used to get abilities after fit
+        self.X = X
+        self.y = y
+        self.date_col = date_col
+        self.starting_abilities = abilites
+
         res = minimize(Model1._neg_log_likelihood,
                        x0=[0, 0],
                        bounds=((0, 1), (0, 1)),
@@ -65,8 +86,9 @@ class Model1:
 
     @staticmethod
     def _neg_log_likelihood(
-            params: Tuple[float, float], X: pd.DataFrame, y: pd.Series, date_col: str,
-            abilities: np.array) -> float:
+            params: Tuple[float, float],
+            X: pd.DataFrame, y: pd.Series, date_col: str, abilities: np.array,
+            return_abilities: bool = False) -> float:
         '''
         Negative of the log likelihood
 
@@ -102,6 +124,10 @@ class Model1:
 
             abilities = Model1._update_abilities(
                 x, abilities, p1_score, p2_score, tau)
+
+        # used by get fitted abilities
+        if return_abilities:
+            return abilities
 
         return -likelihood
 
