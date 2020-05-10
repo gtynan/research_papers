@@ -17,7 +17,7 @@ class Model1:
         '''
         try:
             return self._alpha
-        except:
+        except AttributeError:
             raise Exception(fit_error)
 
     @property
@@ -27,7 +27,7 @@ class Model1:
         '''
         try:
             return self._tau
-        except:
+        except AttributeError:
             raise Exception(fit_error)
 
     @property
@@ -37,7 +37,25 @@ class Model1:
         '''
         try:
             return self._ln_likelihood
-        except:
+        except AttributeError:
+            raise Exception(fit_error)
+
+    def get_fitted_abilities(self) -> pd.Series:
+        '''
+        Runs the fitting once more using the fitted alpha and tau to get end abilities
+        '''
+        try:
+            abilities = Model1._neg_log_likelihood(
+                params=[self.alpha, self.tau],
+                X=self.X, y=self.y, date_col=self.date_col,
+                abilities=self.starting_abilities, return_abilities=True)
+
+            players = self.X.drop(columns=self.date_col).columns
+
+            return pd.Series(
+                data=abilities, index=players).sort_values(
+                ascending=False)
+        except AttributeError:
             raise Exception(fit_error)
 
     def fit(
@@ -54,6 +72,12 @@ class Model1:
         Returns:
             None
         '''
+        # used to get abilities after fit
+        self.X = X
+        self.y = y
+        self.date_col = date_col
+        self.starting_abilities = abilites
+
         res = minimize(Model1._neg_log_likelihood,
                        x0=[0, 0],
                        bounds=((0, 1), (0, 1)),
@@ -65,8 +89,9 @@ class Model1:
 
     @staticmethod
     def _neg_log_likelihood(
-            params: Tuple[float, float], X: pd.DataFrame, y: pd.Series, date_col: str,
-            abilities: np.array) -> float:
+            params: Tuple[float, float],
+            X: pd.DataFrame, y: pd.Series, date_col: str, abilities: np.array,
+            return_abilities: bool = False) -> float:
         '''
         Negative of the log likelihood
 
@@ -103,6 +128,10 @@ class Model1:
             abilities = Model1._update_abilities(
                 x, abilities, p1_score, p2_score, tau)
 
+        # used by get fitted abilities
+        if return_abilities:
+            return abilities
+
         return -likelihood
 
     @staticmethod
@@ -119,12 +148,22 @@ class Model1:
         '''
         # abilities to be flat array
         assert abilities.ndim == 1
+        # X can't be flat otherwise argwhere will fail
+        assert X.ndim > 1
         # X columns = abilites length,
         assert X.shape[1] == abilities.shape[0]
 
+        # removed to see if argwhere faster
+        '''
         # elementwise multiplication gives p1 and -p2 values
         # sum calculates the difference
-        ability_diff = np.sum(X * abilities, axis=1)
+        # ability_diff = np.sum(X * abilities, axis=1)
+        '''
+        # column position for each row
+        p1_index = np.argmax(X, axis=1)
+        p2_index = np.argmin(X, axis=1)
+
+        ability_diff = abilities[p1_index] - abilities[p2_index]
 
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
@@ -192,11 +231,11 @@ class Model1:
         new_abilites = copy.deepcopy(abilities)
 
         # only 1 entry > 0 for each matchup (row) thus max returns positon
-        p1_index = np.argmax(X > 0, axis=1)
+        p1_index = np.argmax(X, axis=1)
         new_abilites[p1_index] += (p1_score * tau)
 
         # only 1 entry < 0 for each matchup (row) thus max returns positon
-        p2_index = np.argmax(X < 0, axis=1)
+        p2_index = np.argmin(X, axis=1)
         new_abilites[p2_index] += (p2_score * tau)
 
         return new_abilites

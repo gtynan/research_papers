@@ -1,0 +1,13 @@
+# training data
+fitted_abilities:
+  type: pandas.CSVDataSet
+  filepath: data/07_model_output/fitted_abilities.csv
+  save_args:
+    index: True
+
+# output fitted params
+model_params:
+  type: pandas.CSVDataSet
+  filepath: data/08_reporting/model_output.csv
+  save_args:
+    index: True

@@ -2,7 +2,7 @@ from typing import Dict
 
 from kedro.pipeline import Pipeline, node
 
-from high_dim_bt.nodes.data_science import fit_model, save_outputs
+from high_dim_bt.nodes.data_science import fit_model, get_outputs
 
 
 def create_pipeline(**kwargs) -> Dict[str, Pipeline]:
@@ -16,16 +16,15 @@ def create_pipeline(**kwargs) -> Dict[str, Pipeline]:
             abilities='starting_abilities'),
         outputs='fitted_model')
 
-    save = node(
-        func=save_outputs,
+    outputs = node(
+        func=get_outputs,
         inputs=dict(
-            model='fitted_model'
-        ),
-        outputs=None)
+            model='fitted_model'),
+        outputs=["fitted_abilities", "model_params"])
 
     return Pipeline(
         [
             fitted_model,
-            save
+            outputs
         ]
     )
