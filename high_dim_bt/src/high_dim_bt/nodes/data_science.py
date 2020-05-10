@@ -18,8 +18,8 @@ def get_outputs(model: Model1) -> Tuple[pd.Series, pd.Series]:
     '''
     Returns the fitted abilities and the model params in a series
     '''
-    fitted_abilities = model.get_fitted_abilities()
+    fitted_abilities = model.get_fitted_ranking()
     model_params = pd.Series(
-        {"alpha": model.alpha, "tau": model.tau,
+        {"alpha": model.alpha, "tau_b": model.tau_b,
          "log_likelihood": model.ln_likelihood})
     return fitted_abilities, model_params
