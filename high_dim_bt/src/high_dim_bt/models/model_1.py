@@ -4,10 +4,7 @@ import pandas as pd
 from scipy.optimize import minimize
 import copy
 
-from .abstract_high_dm import AbstractHighDimensionalModel
-
-# Raised when certain properties or functions called prior to fit()
-fit_error: str = 'Cannot call prior to fit()'
+from .abstract_high_dm import AbstractHighDimensionalModel, fit_error
 
 
 class Model1(AbstractHighDimensionalModel):
@@ -178,25 +175,6 @@ class Model1(AbstractHighDimensionalModel):
         ability_diff = abilities[p1_index] - abilities[p2_index]
 
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
-
-    @staticmethod
-    def _calculate_score(y: np.array, probs: np.array) -> Tuple[np.array, np.array]:
-        '''
-        Score function to add to abilites weighted by tau_b
-
-        Args:
-            y: array (n, ) of outcomes for each matchup
-            probs: array (n, ) of predicted probabilites for each matchup
-
-        Returns:
-            p1_score, p2_score both (n, )
-        '''
-        # both should be flat arrays
-        assert y.shape == probs.shape
-        assert y.ndim == 1
-
-        s1 = y * (1 - probs) - (1 - y) * probs
-        return s1, -s1
 
     @staticmethod
     def _update_abilities(
