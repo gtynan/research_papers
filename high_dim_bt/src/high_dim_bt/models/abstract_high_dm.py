@@ -47,11 +47,29 @@ class AbstractHighDimensionalModel(ABC):
         pass
 
     @abstractmethod
-    def get_fitted_ranking(self) -> pd.Series:
+    def get_ranking(self) -> pd.Series:
         '''
         Using fitted model params rank players based on data
         '''
         pass
+
+    @staticmethod
+    def _calculate_probs(p1_abilities: np.array,
+                         p2_abilities: np.array) -> np.array:
+        '''
+        Calcualtes probability of p1 beating p2 in a given mathcup using abilities at that time
+
+        Args:
+            X: array (n x p) of matchups where each row corresponds to a match.
+            p1_abilites:
+            p2_abilites:
+
+        Returns:
+            array (n, ) of probability of p1 beating p2 in a given matchup
+        '''
+        ability_diff = p1_abilities - p2_abilities
+
+        return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
     @staticmethod
     def _log_prediction_error(y: np.array, probs: np.array) -> np.array:
@@ -90,14 +108,6 @@ class AbstractHighDimensionalModel(ABC):
 
         s1 = y * (1 - probs) - (1 - y) * probs
         return s1, -s1
-
-    @staticmethod
-    @abstractmethod
-    def _calculate_probs() -> np.array:
-        '''
-        Probability of player_1 beating player_2
-        '''
-        pass
 
     @staticmethod
     @abstractmethod
