@@ -97,6 +97,39 @@ class Model1(AbstractHighDimensionalModel):
         self._ln_likelihood = -res['fun']
 
     @staticmethod
+    def _calculate_probs(X: np.array, abilities: np.array) -> np.array:
+        '''
+        Calcualtes probability of p1 beating p2 in a given mathcup using abilities at that time
+
+        Args:
+            X: array (n x p) of matchups where each row corresponds to a match.
+            abilites: array (p, ) of player abilites
+
+        Returns:
+            array (n, ) of probability of p1 beating p2 in a given matchup
+        '''
+        # abilities to be flat array
+        assert abilities.ndim == 1
+        # X can't be flat otherwise argwhere will fail
+        assert X.ndim > 1
+        # X columns = abilites length,
+        assert X.shape[1] == abilities.shape[0]
+
+        # removed to see if argwhere faster
+        '''
+        # elementwise multiplication gives p1 and -p2 values
+        # sum calculates the difference
+        # ability_diff = np.sum(X * abilities, axis=1)
+        '''
+        # column position for each row
+        p1_index = np.argmax(X, axis=1)
+        p2_index = np.argmin(X, axis=1)
+
+        ability_diff = abilities[p1_index] - abilities[p2_index]
+
+        return np.exp(ability_diff) / (1 + np.exp(ability_diff))
+
+    @staticmethod
     def _neg_log_likelihood(
             params: Tuple[float, float],
             X: pd.DataFrame, y: pd.Series, date_col: str, abilities: np.array,
