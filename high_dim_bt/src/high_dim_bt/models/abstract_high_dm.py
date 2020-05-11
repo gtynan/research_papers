@@ -94,6 +94,9 @@ class AbstractHighDimensionalModel(ABC):
     @staticmethod
     @abstractmethod
     def _calculate_probs() -> np.array:
+        '''
+        Probability of player_1 beating player_2
+        '''
         pass
 
     @staticmethod
