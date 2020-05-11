@@ -57,16 +57,18 @@ class AbstractHighDimensionalModel(ABC):
     def _calculate_probs(p1_abilities: np.array,
                          p2_abilities: np.array) -> np.array:
         '''
-        Calcualtes probability of p1 beating p2 in a given mathcup using abilities at that time
+        Logit probability of p1 beating p2 in a given mathcup using abilities at that time
 
         Args:
             X: array (n x p) of matchups where each row corresponds to a match.
-            p1_abilites:
-            p2_abilites:
+            p1_abilites: player_1 abilities
+            p2_abilites: player_2 abilities
 
         Returns:
-            array (n, ) of probability of p1 beating p2 in a given matchup
+            array (n, ) of pfrobability of p1 beating p2 in a given matchup
         '''
+        assert p1_abilities.shape == p2_abilities.shape
+
         ability_diff = p1_abilities - p2_abilities
 
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
