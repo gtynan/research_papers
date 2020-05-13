@@ -173,6 +173,8 @@ class Model1(AbstractHighDimensionalModel):
             X: np.array, abilities: np.array, p1_score: np.array,
             p2_score: np.array, tau_b: float) -> np.array:
         '''
+        Formuala 2. 
+
         Generates players new abilities by adding score * tau_b to previous abilities in a random walk process
 
         Args:
@@ -192,14 +194,12 @@ class Model1(AbstractHighDimensionalModel):
         # flat arrays
         assert abilities.ndim == p1_score.ndim == p2_score.ndim == 1
 
-        new_abilites = copy.deepcopy(abilities)
-
         # only 1 entry > 0 for each matchup (row) thus max returns positon
         p1_index = np.argmax(X, axis=1)
-        new_abilites[p1_index] += (p1_score * tau_b)
+        abilities[p1_index] += (p1_score * tau_b)
 
         # only 1 entry < 0 for each matchup (row) thus max returns positon
         p2_index = np.argmin(X, axis=1)
-        new_abilites[p2_index] += (p2_score * tau_b)
+        abilities[p2_index] += (p2_score * tau_b)
 
-        return new_abilites
+        return abilities
