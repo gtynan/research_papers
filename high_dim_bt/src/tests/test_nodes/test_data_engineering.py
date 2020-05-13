@@ -15,18 +15,10 @@ def test_get_tennis_data(context):
     assert data.iloc[-1][context.params['date_col']].year == 2006
 
 
-def test_clean_data(context, dummy_data):
-    # columns where row dropped if nan
-    nan_cols = [context.params['winner_pts'], context.params['loser_pts']]
-
-    # cleaned data
-    c_data = clean_data(
-        data=dummy_data,
-        winner_col=context.params['winner_col'],
-        loser_col=context.params['loser_col'],
-        drop_nan_cols=nan_cols,
-        min_matches=2)
-
+def test_clean_data(context, c_data):
+    '''
+    Clean data is used in model tests so applied function moved to fixture
+    '''
     players = np.unique(
         c_data
         [[context.params['winner_col'],
@@ -36,7 +28,8 @@ def test_clean_data(context, dummy_data):
     np.testing.assert_array_equal(players, ["Harry", "Tom"])
 
     # row 5 has nan in loser points shoul be removed
-    assert c_data[nan_cols].isnull().values.any() == False
+    assert c_data[context.params['drop_na_cols']
+                  ].isnull().values.any() == False
 
     # index should be sequential 0 -> len(data)-1
     assert c_data.index[0] == 0
