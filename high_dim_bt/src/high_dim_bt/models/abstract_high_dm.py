@@ -54,22 +54,41 @@ class AbstractHighDimensionalModel(ABC):
         pass
 
     @staticmethod
+    @abstractmethod
+    def _neg_log_likelihood() -> float:
+        '''
+        Needed to minimise the -log likelihood
+        '''
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def _calculate_abilities() -> Tuple[np.array, np.array]:
+        '''
+        Player 1 and 2 current abilities
+        '''
+        pass
+
+    @staticmethod
     def _calculate_probs(p1_abilities: np.array,
                          p2_abilities: np.array) -> np.array:
         '''
+        Formula 1. 
+
         Logit probability of p1 beating p2 in a given mathcup using abilities at that time
 
         Args:
-            X: array (n x p) of matchups where each row corresponds to a match.
             p1_abilites: player_1 abilities
             p2_abilites: player_2 abilities
 
         Returns:
-            array (n, ) of pfrobability of p1 beating p2 in a given matchup
+            array (n, ) of probability of p1 beating p2 in a given matchup
         '''
         assert p1_abilities.shape == p2_abilities.shape
 
         ability_diff = p1_abilities - p2_abilities
+
+        print(ability_diff.shape)
 
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
@@ -95,6 +114,8 @@ class AbstractHighDimensionalModel(ABC):
     @staticmethod
     def _calculate_score(y: np.array, probs: np.array) -> Tuple[np.array, np.array]:
         '''
+        Formula 3. 
+
         Score function to add to abilites 
 
         Args:
@@ -110,14 +131,6 @@ class AbstractHighDimensionalModel(ABC):
 
         s1 = y * (1 - probs) - (1 - y) * probs
         return s1, -s1
-
-    @staticmethod
-    @abstractmethod
-    def _neg_log_likelihood() -> float:
-        '''
-        Needed to minimise the -log likelihood
-        '''
-        pass
 
     @staticmethod
     @abstractmethod
