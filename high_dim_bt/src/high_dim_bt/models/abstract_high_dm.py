@@ -88,8 +88,6 @@ class AbstractHighDimensionalModel(ABC):
 
         ability_diff = p1_abilities - p2_abilities
 
-        print(ability_diff.shape)
-
         return np.exp(ability_diff) / (1 + np.exp(ability_diff))
 
     @staticmethod
