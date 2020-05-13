@@ -70,3 +70,4 @@ def test_get_starting_abilities(context, dummy_data):
         loser_pts=context.params['loser_pts'])
 
     np.testing.assert_array_equal(abilites, np.array([100, 10]))
+    assert abilites.dtype is np.dtype(float)

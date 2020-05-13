@@ -133,4 +133,4 @@ def get_starting_abilities(
     abilities = data[[winner_pts, loser_pts]].values.ravel()[pos]
 
     # any nan's relpaced with 0
-    return np.nan_to_num(abilities, nan=0)
+    return np.nan_to_num(abilities, nan=0).astype(float)
