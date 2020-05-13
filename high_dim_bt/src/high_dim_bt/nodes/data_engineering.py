@@ -57,7 +57,7 @@ def clean_data(
                 (data[loser_col].isin(keep_players))]
 
     data = data.dropna(subset=drop_nan_cols)
-    return data
+    return data.reset_index(drop=True)
 
 
 def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
@@ -75,25 +75,8 @@ def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
     Reurns:
         X, y and players data input for bardley terry model, y always relates to player_1
     """
-    # dont want all 1's for y values so swapping some winners out of player_1 to player_2
-    index = range(len(data))
-    n_to_swap = len(index)//2
-
-    # we get position as when we deep copy the index is reset, we do this incase dataframe passed is badly indexed.
-    # we pass the original index back later
-    pos_to_swap = np.random.choice(index,
-                                   n_to_swap,
-                                   replace=False)
-
-    player_1 = data[winner_col].copy(deep=True)
-    player_1.iloc[pos_to_swap] = data[loser_col]
-
-    player_2 = data[loser_col].copy(deep=True)
-    player_2.iloc[pos_to_swap] = data[winner_col]
-
-    # index is passed back
-    y = pd.Series(player_1 == data[winner_col].values,
-                  index=data.index).astype(int)
+    index = data.index
+    y = pd.Series(index=index, data=1)
 
     # dict of players and their position
     participants = {participant: i for i, participant in enumerate(
@@ -104,16 +87,15 @@ def get_model_input(data: pd.DataFrame, winner_col: str, loser_col: str,
 
     # Matrix of data
     X = np.zeros((len(data), len(participants.keys())))
-    X[index, player_1.map(participants)] = 1
-    X[index, player_2.map(participants)] = -1
+    X[index, data[winner_col].map(participants)] = 1
+    X[index, data[loser_col].map(participants)] = -1
 
     # index is passed back
-    X = pd.DataFrame(data=X, columns=participants.keys(), index=data.index)
+    X = pd.DataFrame(data=X, columns=participants.keys(), index=index)
 
     if keep_cols:
         X[keep_cols] = data[keep_cols]
 
-    print(X.shape)
     return X, y, np.array(list(participants.keys()))
 
 
